@@ -1,0 +1,22 @@
+.game {
+  margin-top: 20px;
+}
+
+.map {
+  display: inline-block;
+  border-bottom: 1px solid grey;
+  border-right: 1px solid grey;
+}
+
+.row {
+  display: flex;
+}
+
+.box {
+  border-top: 1px solid grey;
+  border-left: 1px solid grey;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+}
