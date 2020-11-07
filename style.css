@@ -4,8 +4,7 @@
 
 .map {
   display: inline-block;
-  border-bottom: 1px solid grey;
-  border-right: 1px solid grey;
+  border: 1px solid grey;
 }
 
 .row {
@@ -13,10 +12,57 @@
 }
 
 .box {
-  border-top: 1px solid grey;
-  border-left: 1px solid grey;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 25px;
   height: 25px;
-  line-height: 25px;
-  text-align: center;
+  border: 1px solid grey;
+  font-weight: 400;
+}
+
+.layer {
+  position: absolute;
+  z-index: 100;
+  width: 25px;
+  height: 25px;
+}
+
+.mine {
+  width: 25px;
+  height: 25px;
+}
+
+.pressed {
+  transform: rotate(180deg);
+}
+
+.transparent {
+  opacity: 0;
+}
+
+.box-color-1 {
+  color: lightskyblue;
+}
+.box-color-2 {
+  color: green;
+}
+.box-color-3 {
+  color: red;
+}
+.box-color-4 {
+  color: orange;
+}
+.box-color-5 {
+  color: brown;
+}
+.box-color-6 {
+  color: teal;
+}
+.box-color-7 {
+  color: black;
+}
+.box-color-8 {
+  color: purple;
 }

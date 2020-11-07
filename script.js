@@ -32,20 +32,23 @@ const generateMineNumbers = ({ size, mines }) => {
 };
 
 const convertToMinesCoordinate = (mineNumbers, size) => {
-  const [rows, cols] = size; // 16 x 30: 16 rows, 30 columns
-  let minesCoordinates = [];
+  const [rows, cols] = size;
 
-  mineNumbers.map((num) => {
-    const r = Math.ceil(num / rows);
-    const c = num % cols === 0 ? rows : num % cols;
-    minesCoordinates.push(`${r}-${c}`);
+  const minesCoordinates = mineNumbers.map((num) => {
+    const r = Math.ceil(num / cols);
+    const c = num % cols === 0 ? cols : num % cols;
+    return `${r}-${c}`;
   });
 
   return minesCoordinates;
 };
 
 const createBox = (coordinate) => {
-  return `<div class="js-box-${coordinate} box"></div>`;
+  return (
+    `<div class="js-box-${coordinate} box">` +
+    `<img class="js-layer-${coordinate} layer transparent" src="images/square.png" alt="layer-${coordinate}"/>` +
+    "</div>"
+  );
 };
 
 const renderBoxes = (dom, [rows, cols]) => {
@@ -63,22 +66,124 @@ const renderBoxes = (dom, [rows, cols]) => {
   dom.innerHTML = gameContentString;
 };
 
-const renderMines = (dom, mineCoordinates) => {
+const getBoxesCoordinateAround = ([rows, cols], r, c) => {
+  const boxesCoordinateAround = [];
+  if (r - 1 > 0 && c - 1 > 0) {
+    boxesCoordinateAround.push(`${r - 1}-${c - 1}`);
+  }
+  if (r - 1 > 0) {
+    boxesCoordinateAround.push(`${r - 1}-${c}`);
+  }
+  if (r - 1 > 0 && c + 1 <= cols) {
+    boxesCoordinateAround.push(`${r - 1}-${c + 1}`);
+  }
+  if (c - 1 > 0) {
+    boxesCoordinateAround.push(`${r}-${c - 1}`);
+  }
+  if (c + 1 <= cols) {
+    boxesCoordinateAround.push(`${r}-${c + 1}`);
+  }
+  if (r + 1 <= rows && c - 1 > 0) {
+    boxesCoordinateAround.push(`${r + 1}-${c - 1}`);
+  }
+  if (r + 1 <= rows) {
+    boxesCoordinateAround.push(`${r + 1}-${c}`);
+  }
+  if (r + 1 <= rows && c + 1 <= cols) {
+    boxesCoordinateAround.push(`${r + 1}-${c + 1}`);
+  }
+  return boxesCoordinateAround;
+};
+
+const countMineAround = ([rows, cols], row, col) => {
+  const boxesCoordinateAround = getBoxesCoordinateAround(
+    [rows, cols],
+    row,
+    col
+  );
+  let count = 0;
+
+  boxesCoordinateAround.map((coordinate) => {
+    const boxAroundDOM = document.querySelector(`.js-box-${coordinate}`);
+    const hasMine = !!boxAroundDOM.querySelectorAll("img")[1];
+    if (hasMine) {
+      count += 1;
+    }
+  });
+  if (count) {
+    const boxDOM = document.querySelector(`.js-box-${row}-${col}`);
+    boxDOM.innerText = count;
+    boxDOM.classList.add(`box-color-${count}`);
+  }
+};
+
+const renderMines = (mineCoordinates) => {
   mineCoordinates.map((coordinate) => {
-    const selector = `.js-box-${coordinate}`;
-    document.querySelector(selector).innerHTML = "m";
+    const boxDOM = document.querySelector(`.js-box-${coordinate}`);
+    boxDOM.insertAdjacentHTML(
+      "beforeend",
+      `<img class="mine" src="images/mine.png" alt="mine-${coordinate}" />`
+    );
   });
 };
 
-const createGame = (level) => {
-  const gameDOM = document.querySelector(".js-map");
+const renderMineHintNumber = ([rows, cols]) => {
+  for (let r = 1; r <= rows; r++) {
+    for (let c = 1; c <= cols; c++) {
+      const boxSelector = `.js-box-${r}-${c}`;
+      const boxDOM = document.querySelector(boxSelector);
+      const hasMine = !!boxDOM.querySelectorAll("img")[1];
+      if (hasMine) {
+        continue;
+      }
+      countMineAround([rows, cols], r, c);
+    }
+  }
+};
 
-  if (gameDOM.innerHTML) {
+const addClickEvent = ([rows, cols]) => {
+  for (let r = 1; r <= rows; r++) {
+    for (let c = 1; c <= cols; c++) {
+      const boxSelector = `.js-box-${r}-${c}`;
+      const squareSelector = `.js-layer-${r}-${c}`;
+      const boxDOM = document.querySelector(boxSelector);
+      const squareDOM = document.querySelector(squareSelector);
+      if (!squareDOM) {
+        continue;
+      }
+      boxDOM.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+        squareDOM.src = squareDOM.src.includes("flag")
+          ? "images/square.png"
+          : "images/square-flag.png";
+        return false;
+      });
+      boxDOM.addEventListener("click", () => {
+        const isFlaged = squareDOM.src.includes("flag");
+        if (!isFlaged) {
+          const hasMine = !!boxDOM.querySelectorAll("img")[1];
+          squareDOM.classList.add("transparent");
+          setTimeout(() => {
+            if (hasMine) {
+              alert("You lose!");
+              document.querySelector(".js-map").innerHTML = "";
+            }
+          }, 200);
+        }
+      });
+    }
+  }
+};
+
+const createGame = (level) => {
+  const mapDOM = document.querySelector(".js-map");
+
+  if (mapDOM.innerHTML) {
     console.log("tạo lại game cái cu!");
     return;
   }
 
-  renderBoxes(gameDOM, LEVELS[level].size);
+  renderBoxes(mapDOM, LEVELS[level].size);
 
   const mineNumbers = generateMineNumbers(LEVELS[level]);
 
@@ -87,7 +192,11 @@ const createGame = (level) => {
     LEVELS[level].size
   );
 
-  renderMines(gameDOM, mineCoordinates);
+  renderMines(mineCoordinates);
+
+  renderMineHintNumber(LEVELS[level].size);
+
+  addClickEvent(LEVELS[level].size);
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
