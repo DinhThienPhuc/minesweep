@@ -13,6 +13,31 @@ const LEVELS = {
   },
 };
 
+const createBox = (coordinate) => {
+  return (
+    `<div class="js-box-${coordinate} box">` +
+    `<img class="js-layer-${coordinate} layer" src="images/square.png" alt="layer-${coordinate}"/>` +
+    "</div>"
+  );
+};
+
+const renderBoxes = (dom) => {
+  const [rows, cols] = window.LEVEL.size;
+  let gameContentString = "";
+
+  for (let r = 1; r <= rows; r++) {
+    let gameContentRowStr = `<div class="js-row-${r} row">`;
+    for (let c = 1; c <= cols; c++) {
+      gameContentRowStr += createBox(`${r}-${c}`);
+      GRID.push(`${r}-${c}`);
+    }
+    gameContentRowStr += "</div>";
+    gameContentString += gameContentRowStr;
+  }
+
+  dom.innerHTML = gameContentString;
+};
+
 const generateMineNumbers = ({ size, mines }) => {
   const [rows, cols] = size;
   const lowerBound = 1;
@@ -32,7 +57,7 @@ const generateMineNumbers = ({ size, mines }) => {
 };
 
 const convertToMinesCoordinate = (mineNumbers, size) => {
-  const [rows, cols] = size;
+  const [_, cols] = size;
 
   const minesCoordinates = mineNumbers.map((num) => {
     const r = Math.ceil(num / cols);
@@ -43,30 +68,18 @@ const convertToMinesCoordinate = (mineNumbers, size) => {
   return minesCoordinates;
 };
 
-const createBox = (coordinate) => {
-  return (
-    `<div class="js-box-${coordinate} box">` +
-    `<img class="js-layer-${coordinate} layer transparent" src="images/square.png" alt="layer-${coordinate}"/>` +
-    "</div>"
-  );
+const renderMines = (mineCoordinates) => {
+  mineCoordinates.map((coordinate) => {
+    const boxDOM = document.querySelector(`.js-box-${coordinate}`);
+    boxDOM.insertAdjacentHTML(
+      "beforeend",
+      `<img class="mine" src="images/mine.png" alt="mine-${coordinate}" />`
+    );
+  });
 };
 
-const renderBoxes = (dom, [rows, cols]) => {
-  let gameContentString = "";
-
-  for (let r = 1; r <= rows; r++) {
-    let gameContentRowStr = `<div class="js-row-${r} row">`;
-    for (let c = 1; c <= cols; c++) {
-      gameContentRowStr += createBox(`${r}-${c}`);
-    }
-    gameContentRowStr += "</div>";
-    gameContentString += gameContentRowStr;
-  }
-
-  dom.innerHTML = gameContentString;
-};
-
-const getBoxesCoordinateAround = ([rows, cols], r, c) => {
+const getBoxesCoordinateAround = (r, c) => {
+  const [rows, cols] = window.LEVEL.size;
   const boxesCoordinateAround = [];
   if (r - 1 > 0 && c - 1 > 0) {
     boxesCoordinateAround.push(`${r - 1}-${c - 1}`);
@@ -95,53 +108,201 @@ const getBoxesCoordinateAround = ([rows, cols], r, c) => {
   return boxesCoordinateAround;
 };
 
-const countMineAround = ([rows, cols], row, col) => {
-  const boxesCoordinateAround = getBoxesCoordinateAround(
-    [rows, cols],
-    row,
-    col
-  );
+const countMineAround = (r, c) => {
+  const boxesCoordinateAround = getBoxesCoordinateAround(r, c);
   let count = 0;
 
   boxesCoordinateAround.map((coordinate) => {
     const boxAroundDOM = document.querySelector(`.js-box-${coordinate}`);
-    const hasMine = !!boxAroundDOM.querySelectorAll("img")[1];
+    const hasMine = boxAroundDOM.querySelector(".mine");
     if (hasMine) {
       count += 1;
     }
   });
-  if (count) {
-    const boxDOM = document.querySelector(`.js-box-${row}-${col}`);
-    boxDOM.innerText = count;
-    boxDOM.classList.add(`box-color-${count}`);
-  }
+
+  return count;
 };
 
-const renderMines = (mineCoordinates) => {
-  mineCoordinates.map((coordinate) => {
-    const boxDOM = document.querySelector(`.js-box-${coordinate}`);
-    boxDOM.insertAdjacentHTML(
-      "beforeend",
-      `<img class="mine" src="images/mine.png" alt="mine-${coordinate}" />`
-    );
-  });
-};
-
-const renderMineHintNumber = ([rows, cols]) => {
+const renderMineHintNumber = () => {
+  const [rows, cols] = window.LEVEL.size;
   for (let r = 1; r <= rows; r++) {
     for (let c = 1; c <= cols; c++) {
       const boxSelector = `.js-box-${r}-${c}`;
       const boxDOM = document.querySelector(boxSelector);
-      const hasMine = !!boxDOM.querySelectorAll("img")[1];
+      const hasMine = boxDOM.querySelector(".mine");
       if (hasMine) {
         continue;
       }
-      countMineAround([rows, cols], r, c);
+      const count = countMineAround(r, c);
+      if (count) {
+        const boxDOM = document.querySelector(`.js-box-${r}-${c}`);
+        boxDOM.insertAdjacentHTML(
+          "beforeend",
+          `<span class="box-text box-text-color-${count}">${count}</span>`
+        );
+      }
     }
   }
 };
 
-const addClickEvent = ([rows, cols]) => {
+const checkVictory = () => {
+  setTimeout(() => {
+    const [rows, cols] = window.LEVEL.size;
+    const uniqueNoMineBoxes = unique(window.NO_MINE_BOXES).length;
+    if (uniqueNoMineBoxes === rows * cols - window.LEVEL.mines) {
+      alert("Victory!");
+      document.location.reload();
+    }
+  }, 300);
+};
+
+const renderAroundBoxes = (aroundBoxes) => {
+  let hasMine = false;
+  for (let i = 0, len = aroundBoxes.length; i < len; i++) {
+    const coor = aroundBoxes[i];
+    const box = document.querySelector(`.js-layer-${coor}`);
+    if (!box.classList.contains("transparent")) {
+      window.NO_MINE_BOXES.push(coor);
+      box.classList.add("transparent");
+      if (box.parentNode.querySelector(".mine")) {
+        hasMine = true;
+      }
+    }
+  }
+  if (hasMine) {
+    setTimeout(() => {
+      alert("You lose!");
+      window.NO_MINE_BOXES = null;
+      document.location.reload();
+    }, 200);
+  }
+  checkVictory();
+};
+
+const rightClick = (event, squareDOM) => {
+  event.preventDefault();
+  squareDOM.src = squareDOM.src.includes("flag")
+    ? "images/square.png"
+    : "images/square-flag.png";
+  return false;
+};
+
+const handleDoubleClickOnBox = (event, boxDOM, squareDOM, row, col) => {
+  event.preventDefault();
+  const opennedBox = !!squareDOM.classList.contains("transparent");
+  const boxTextDOM = boxDOM.querySelector(".box-text");
+  if (opennedBox && boxTextDOM) {
+    const minesCount = +boxTextDOM.innerText;
+    const boxesCoordinateAround = getBoxesCoordinateAround(row, col);
+    let newboxesCoordinateAround = [];
+    let flagsCount = 0;
+    for (let i = 0, len = boxesCoordinateAround.length; i < len; i++) {
+      const coordinate = boxesCoordinateAround[i];
+      aroundSquareDOM = document.querySelector(`.js-layer-${coordinate}`);
+      if (aroundSquareDOM.src.includes("flag")) {
+        flagsCount += 1;
+        newboxesCoordinateAround.push(coordinate);
+      }
+    }
+    newboxesCoordinateAround = diff(
+      boxesCoordinateAround,
+      newboxesCoordinateAround
+    );
+    if (flagsCount && flagsCount === minesCount) {
+      renderAroundBoxes(newboxesCoordinateAround);
+    }
+  }
+};
+
+const diff = (arr1, arr2) => arr1.filter((e) => !arr2.includes(e));
+
+const unique = (arr) => [...new Set(arr)];
+
+const getEmptyBoxes = (aroundBoxes) =>
+  aroundBoxes.filter((coor) => {
+    const boxDOM = document.querySelector(`.js-box-${coor}`);
+    if (boxDOM.querySelectorAll(".box-text").length) {
+      return false;
+    } else {
+      return true;
+    }
+  });
+
+const spread = (r, c) => {
+  let trackBoxes = [`${r}-${c}`];
+  let result = [];
+  let trackedBoxes = [];
+
+  while (trackBoxes.length) {
+    let temp = [];
+    trackBoxes.map((coor) => {
+      if (!trackedBoxes.includes(coor)) {
+        const [r, c] = coor.split("-");
+        const aroundBoxes = getBoxesCoordinateAround(+r, +c);
+        const emptyBoxes = getEmptyBoxes(aroundBoxes);
+        temp = [...temp, ...emptyBoxes];
+        trackedBoxes.push(coor);
+        result.push(coor);
+        result = [...result, ...emptyBoxes];
+      }
+    });
+    trackBoxes = diff(temp, trackedBoxes);
+  }
+
+  return unique(result);
+};
+
+const getEmptyBoxesBorders = (emptyBoxes) => {
+  let temp = [];
+
+  emptyBoxes.map((emptyBoxCoor) => {
+    const [r, c] = emptyBoxCoor.split("-");
+    const aroundBoxes = getBoxesCoordinateAround(+r, +c);
+    temp = [...temp, ...aroundBoxes];
+  });
+
+  temp = unique(temp);
+
+  return diff(temp, emptyBoxes);
+};
+
+const renderNoneMineBoxes = (noneMineBoxes) => {
+  noneMineBoxes.map((coor) => {
+    document.querySelector(`.js-layer-${coor}`).classList.add("transparent");
+  });
+  window.NO_MINE_BOXES = [...window.NO_MINE_BOXES, ...noneMineBoxes];
+  checkVictory();
+};
+
+const handleClickOnBox = (boxDOM, squareDOM, r, c) => {
+  const isFlaged = squareDOM.src.includes("flag");
+  if (!isFlaged && !squareDOM.classList.contains("transparent")) {
+    const hasMine = boxDOM.querySelector(".mine");
+    const hasMineCountNumber = !!boxDOM.querySelectorAll(".box-text").length;
+    squareDOM.classList.add("transparent");
+    setTimeout(() => {
+      if (hasMine) {
+        alert("You lose!");
+        window.NO_MINE_BOXES = null;
+        document.location.reload();
+      }
+      if (hasMineCountNumber) {
+        window.NO_MINE_BOXES.push(`${r}-${c}`);
+        checkVictory();
+      }
+      if (!hasMine && !hasMineCountNumber) {
+        const emptyBoxes = spread(r, c);
+        const emptyBoxesBorders = getEmptyBoxesBorders(emptyBoxes);
+
+        const noneMineBoxes = [...emptyBoxes, ...emptyBoxesBorders];
+        renderNoneMineBoxes(noneMineBoxes);
+      }
+    }, 200);
+  }
+};
+
+const addClickEvent = () => {
+  const [rows, cols] = window.LEVEL.size;
   for (let r = 1; r <= rows; r++) {
     for (let c = 1; c <= cols; c++) {
       const boxSelector = `.js-box-${r}-${c}`;
@@ -151,26 +312,15 @@ const addClickEvent = ([rows, cols]) => {
       if (!squareDOM) {
         continue;
       }
-      boxDOM.addEventListener("contextmenu", (event) => {
-        event.preventDefault();
-        squareDOM.src = squareDOM.src.includes("flag")
-          ? "images/square.png"
-          : "images/square-flag.png";
-        return false;
-      });
-      boxDOM.addEventListener("click", () => {
-        const isFlaged = squareDOM.src.includes("flag");
-        if (!isFlaged) {
-          const hasMine = !!boxDOM.querySelectorAll("img")[1];
-          squareDOM.classList.add("transparent");
-          setTimeout(() => {
-            if (hasMine) {
-              alert("You lose!");
-              document.querySelector(".js-map").innerHTML = "";
-            }
-          }, 200);
-        }
-      });
+      boxDOM.addEventListener("contextmenu", (event) =>
+        rightClick(event, squareDOM)
+      );
+      boxDOM.addEventListener("dblclick", (event) =>
+        handleDoubleClickOnBox(event, boxDOM, squareDOM, r, c)
+      );
+      boxDOM.addEventListener("click", () =>
+        handleClickOnBox(boxDOM, squareDOM, r, c)
+      );
     }
   }
 };
@@ -179,24 +329,28 @@ const createGame = (level) => {
   const mapDOM = document.querySelector(".js-map");
 
   if (mapDOM.innerHTML) {
-    console.log("tạo lại game cái cu!");
+    alert("Game created. Please continue the game or reload page to restart.");
     return;
   }
 
-  renderBoxes(mapDOM, LEVELS[level].size);
+  window.NO_MINE_BOXES = [];
+  GRID = [];
+  window.LEVEL = LEVELS[level];
+
+  renderBoxes(mapDOM, window.LEVEL.size);
 
   const mineNumbers = generateMineNumbers(LEVELS[level]);
 
   const mineCoordinates = convertToMinesCoordinate(
     mineNumbers,
-    LEVELS[level].size
+    window.LEVEL.size
   );
 
   renderMines(mineCoordinates);
 
-  renderMineHintNumber(LEVELS[level].size);
+  renderMineHintNumber(window.LEVEL.size);
 
-  addClickEvent(LEVELS[level].size);
+  addClickEvent(window.LEVEL.size);
 };
 
 document.addEventListener("DOMContentLoaded", async () => {

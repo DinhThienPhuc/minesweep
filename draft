@@ -1,0 +1,21 @@
+BÀI TOÁN LẤY RA TẤT CẢ CÁC Ô GẦN NHAU K CHƯA MÌN, CHỈ CHỨA Ô RỖNG VÀ Ô SỐ
+
+tọa độ ô hiện tại = currentCoor = R-C
+mảng empty box để loop = loopEmptyBox = [`${currentCoor}`]
+mảng kết quả = result = []
+mảng chứa các ô đã track = tracked = []
+
+while loopEmptyBox is not empty:
+    temp = []
+    for coor in loopEmptyBox: -> lặp trong danh sách các ô trống
+        if coor not in tracked:
+            aroundBoxes = getAroundBoxes(coor)  -> lấy danh sách các ô xung quanh ô tracked hiện tại
+            emptyBoxes = getEmptyBoxes(aroundBoxes)
+            temp.push(emptyBoxes) -> lấy danh sách các ô trống, đẩy vào biến temp
+            tracked.push(coor) -> đẩy tọa độ ô hiện tại vào danh sách tracked, để k loop lại vào ô này
+            result.push(coor)         |
+            result.push(emptyBoxes)  |-> đẩy các ô trống vào danh sách kết quả
+     
+    result = unique(result) // bỏ trùng lặp
+    temp = temp.diffFrom(tracked)
+    loopEmptyBox = temp
