@@ -179,11 +179,20 @@ const renderAroundBoxes = (aroundBoxes) => {
   checkVictory();
 };
 
+const showFlagsCount = (flagsCount) => {
+  document.querySelector(".js-flags-count").innerText = flagsCount;
+};
+
 const rightClick = (event, squareDOM) => {
   event.preventDefault();
-  squareDOM.src = squareDOM.src.includes("flag")
-    ? "images/square.png"
-    : "images/square-flag.png";
+  if (squareDOM.src.includes("flag")) {
+    squareDOM.src = "images/square.png";
+    window.FLAGS_COUNT += 1;
+  } else {
+    squareDOM.src = "images/square-flag.png";
+    window.FLAGS_COUNT -= 1;
+  }
+  showFlagsCount(window.FLAGS_COUNT);
   return false;
 };
 
@@ -336,6 +345,9 @@ const createGame = (level) => {
   window.NO_MINE_BOXES = [];
   GRID = [];
   window.LEVEL = LEVELS[level];
+  window.FLAGS_COUNT = +LEVELS[level].mines;
+
+  showFlagsCount(window.FLAGS_COUNT);
 
   renderBoxes(mapDOM, window.LEVEL.size);
 

@@ -66,3 +66,23 @@
 .box-text-color-8 {
   color: purple;
 }
+
+.flags-count {
+  display: inline-block;
+  height: 22px;
+  width: 22px;
+  border-radius: 4px;
+  border: 1px solid grey;
+  line-height: 22px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.wrapper {
+  display: flex;
+}
+
+.wrapper > button,
+.wrapper > span {
+  margin-right: 10px;
+}
