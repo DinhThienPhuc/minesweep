@@ -375,4 +375,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   document
     .querySelector(".js-create-game-expert")
     .addEventListener("click", () => createGame("expert"));
+  document
+    .querySelector(".js-restart")
+    .addEventListener("click", () => window.location.reload());
 });

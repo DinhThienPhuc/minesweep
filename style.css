@@ -1,10 +1,23 @@
+html,
+body {
+  background-color: #202c33;
+}
+
+.instruction,
+.game-info {
+  display: flex;
+  flex-direction: column;
+  color: #91979a;
+}
+
 .game {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .map {
   display: inline-block;
-  border: 1px solid grey;
 }
 
 .row {
@@ -18,8 +31,10 @@
   align-items: center;
   width: 25px;
   height: 25px;
-  border: 1px solid grey;
+  margin: 1px;
   font-weight: 400;
+  background-color: #363636;
+  border-radius: 3px;
 }
 
 .layer {
@@ -76,13 +91,36 @@
   line-height: 22px;
   text-align: center;
   font-size: 14px;
+  color: white;
 }
 
 .wrapper {
   display: flex;
+  justify-content: center;
 }
 
-.wrapper > button,
-.wrapper > span {
+.btn-group {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-group > .btn,
+.btn-group > span {
+  margin-left: 10px;
   margin-right: 10px;
+}
+
+.btn-group .btn {
+  border: 2px solid #0095ff;
+  color: #0095ff;
+  background-color: transparent;
+  border-radius: 4px;
+  padding: 8px 15px;
+  transition: all linear 200ms;
+}
+
+@media screen and (min-width: 769px) {
+  .hide-on-mobile {
+    display: none;
+  }
 }

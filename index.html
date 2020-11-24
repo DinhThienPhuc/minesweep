@@ -14,15 +14,33 @@
       content="width=device-width, initial-scale=1, maximum-scale=1"
     />
     <link rel="stylesheet" href="./style.css" />
-    <!-- <link rel="icon" type="image/png" href="favicon.ico" /> -->
+    <link rel="icon" type="image/png" href="favicon.ico" />
   </head>
   <body>
-    <div class="wrapper">
-      <button class="js-create-game-beginner">Beginner</button>
-      <button class="js-create-game-intermediate">Intermediate</button>
-      <button class="js-create-game-expert">Expert</button>
+    <div class="btn-group">
+      <button class="js-restart btn">Restart game</button>
+      <button class="js-create-game-beginner btn">Beginner</button>
+      <button class="js-create-game-intermediate btn show-on-mobile">Intermediate</button>
+      <button class="js-create-game-expert btn show-on-mobile">Expert</button>
       <span class="js-flags-count flags-count"></span>
     </div>
+
+    <div class="wrapper">
+      <div class="instruction">
+        <span><code>Instruction</code></span>
+        <span><code>click: reveal</code></span>
+        <span><code>right-click: set flag</code></span>
+        <span><code>double-click: spread reveal</code></span>
+      </div>
+      <div class="game-info">
+        <span><code>Game info</code></span>
+        <span><code>status: inprogress</code></span>
+        <span><code>beginner: 100%</code></span>
+        <span><code>intermediate: 75%</code></span>
+        <span><code>expert: 4%</code></span>
+      </div>
+    </div>
+    
     <div class="js-game game">
       <div class="js-map map"></div>
     </div>
