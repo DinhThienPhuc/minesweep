@@ -13,37 +13,41 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1"
     />
-    <link rel="stylesheet" href="./style.css" />
-    <link rel="icon" type="image/png" href="favicon.ico" />
+    <link rel="stylesheet" href="assets/styles/index.css" />
+    <link rel="icon" type="image/png" href="assets/images/favicon.ico" />
+    <script src="assets/scripts/long-press.min.js"></script>
   </head>
   <body>
     <div class="btn-group">
-      <button class="js-restart btn">Restart game</button>
-      <button class="js-create-game-beginner btn">Beginner</button>
-      <button class="js-create-game-intermediate btn show-on-mobile">Intermediate</button>
-      <button class="js-create-game-expert btn show-on-mobile">Expert</button>
+      <button class="js-restart btn"><code>Restart game</code></button>
+      <button class="js-create-game-beginner btn"><code>Beginner</code></button>
+      <button class="js-create-game-intermediate btn show-on-mobile"><code>Intermediate</code></button>
+      <button class="js-create-game-expert btn show-on-mobile"><code>Expert</code></button>
       <span class="js-flags-count flags-count"></span>
     </div>
 
-    <div class="wrapper">
-      <div class="instruction">
-        <span><code>Instruction</code></span>
-        <span><code>click: reveal</code></span>
-        <span><code>right-click: set flag</code></span>
-        <span><code>double-click: spread reveal</code></span>
-      </div>
-      <div class="game-info">
-        <span><code>Game info</code></span>
-        <span><code>status: inprogress</code></span>
-        <span><code>beginner: 100%</code></span>
-        <span><code>intermediate: 75%</code></span>
-        <span><code>expert: 4%</code></span>
-      </div>
+    <div class="instruction">
+      <span class="instruction-piece">
+        <code class="label">Instruction: </code>
+      </span>
+      <span class="instruction-piece">
+        <code class="action">click</code>
+        <code>: reveal,</code>
+      </span>
+      <span class="instruction-piece">
+        <code class="action">right-click</code>
+        <code>: set flag,</code>
+      </span>
+      <span class="instruction-piece">
+        <code class="action">double-click</code>
+        <code>: spread reveal</code>
+      </span>
     </div>
     
     <div class="js-game game">
       <div class="js-map map"></div>
     </div>
-    <script src="./script.js"></script>
+
+    <script src="assets/scripts/index.js"></script>
   </body>
 </html>

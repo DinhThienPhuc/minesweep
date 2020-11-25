@@ -16,7 +16,7 @@ const LEVELS = {
 const createBox = (coordinate) => {
   return (
     `<div class="js-box-${coordinate} box">` +
-    `<img class="js-layer-${coordinate} layer" src="images/square.png" alt="layer-${coordinate}"/>` +
+    `<div class="js-layer-${coordinate} layer" data-flag=""></div>` +
     "</div>"
   );
 };
@@ -185,11 +185,16 @@ const showFlagsCount = (flagsCount) => {
 
 const rightClick = (event, squareDOM) => {
   event.preventDefault();
-  if (squareDOM.src.includes("flag")) {
-    squareDOM.src = "images/square.png";
+  if (squareDOM.getAttribute("data-flag") === "flag") {
+    squareDOM.setAttribute("data-flag", "");
+    squareDOM.innerHTML = "";
     window.FLAGS_COUNT += 1;
   } else {
-    squareDOM.src = "images/square-flag.png";
+    squareDOM.setAttribute("data-flag", "flag");
+    squareDOM.insertAdjacentHTML(
+      "beforeend",
+      `<img class="flag" src="./images/flag.svg" />`
+    );
     window.FLAGS_COUNT -= 1;
   }
   showFlagsCount(window.FLAGS_COUNT);
@@ -208,7 +213,7 @@ const handleDoubleClickOnBox = (event, boxDOM, squareDOM, row, col) => {
     for (let i = 0, len = boxesCoordinateAround.length; i < len; i++) {
       const coordinate = boxesCoordinateAround[i];
       aroundSquareDOM = document.querySelector(`.js-layer-${coordinate}`);
-      if (aroundSquareDOM.src.includes("flag")) {
+      if (aroundSquareDOM.getAttribute("data-flag") === "flag") {
         flagsCount += 1;
         newboxesCoordinateAround.push(coordinate);
       }
@@ -284,7 +289,7 @@ const renderNoneMineBoxes = (noneMineBoxes) => {
 };
 
 const handleClickOnBox = (boxDOM, squareDOM, r, c) => {
-  const isFlaged = squareDOM.src.includes("flag");
+  const isFlaged = squareDOM.getAttribute("data-flag") === "flag";
   if (!isFlaged && !squareDOM.classList.contains("transparent")) {
     const hasMine = boxDOM.querySelector(".mine");
     const hasMineCountNumber = !!boxDOM.querySelectorAll(".box-text").length;
@@ -330,6 +335,10 @@ const addClickEvent = () => {
       boxDOM.addEventListener("click", () =>
         handleClickOnBox(boxDOM, squareDOM, r, c)
       );
+      // Using on mobile
+      boxDOM.addEventListener("long-press", function (e) {
+        rightClick(event, squareDOM);
+      });
     }
   }
 };

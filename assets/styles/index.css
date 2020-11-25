@@ -1,13 +1,29 @@
 html,
 body {
   background-color: #202c33;
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 
-.instruction,
-.game-info {
-  display: flex;
-  flex-direction: column;
+.instruction {
   color: #91979a;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.instruction-piece {
+  margin-right: 10px;
+}
+
+.instruction-piece .label {
+  text-transform: uppercase;
+}
+
+.instruction-piece .action {
+  padding: 2px 8px;
+  background-color: #91979a;
+  color: #202c33;
+  border-radius: 3px;
 }
 
 .game {
@@ -29,24 +45,34 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   margin: 1px;
   font-weight: 400;
   background-color: #363636;
-  border-radius: 3px;
+  border-radius: 2px;
+  font-size: 12px;
 }
 
 .layer {
   position: absolute;
   z-index: 100;
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
+  background-color: #bbb;
+  border-radius: 2px;
+}
+
+.flag {
+  width: 15px;
+  height: 15px;
+  margin-left: 5px;
+  margin-top: 5px;
 }
 
 .mine {
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
 }
 
 .pressed {
@@ -54,7 +80,7 @@ body {
 }
 
 .transparent {
-  opacity: 0;
+  display: none;
 }
 
 .box-text-color-1 {
@@ -84,19 +110,14 @@ body {
 
 .flags-count {
   display: inline-block;
-  height: 22px;
-  width: 22px;
-  border-radius: 4px;
-  border: 1px solid grey;
-  line-height: 22px;
+  height: 33px;
+  width: 33px;
+  border-radius: 3px;
+  border: 2px solid grey;
+  line-height: 33px;
   text-align: center;
   font-size: 14px;
-  color: white;
-}
-
-.wrapper {
-  display: flex;
-  justify-content: center;
+  color: red;
 }
 
 .btn-group {
@@ -117,6 +138,10 @@ body {
   border-radius: 4px;
   padding: 8px 15px;
   transition: all linear 200ms;
+}
+
+.btn-group > .btn:hover {
+  cursor: pointer;
 }
 
 @media screen and (min-width: 769px) {
