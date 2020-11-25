@@ -336,7 +336,7 @@ const addClickEvent = () => {
         handleClickOnBox(boxDOM, squareDOM, r, c)
       );
       // Using on mobile
-      boxDOM.addEventListener("long-press", function (e) {
+      boxDOM.addEventListener("long-press", (event) => {
         rightClick(event, squareDOM);
       });
     }
