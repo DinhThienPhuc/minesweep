@@ -29,7 +29,6 @@ const renderBoxes = (dom) => {
     let gameContentRowStr = `<div class="js-row-${r} row">`;
     for (let c = 1; c <= cols; c++) {
       gameContentRowStr += createBox(`${r}-${c}`);
-      GRID.push(`${r}-${c}`);
     }
     gameContentRowStr += "</div>";
     gameContentString += gameContentRowStr;
@@ -352,7 +351,6 @@ const createGame = (level) => {
   }
 
   window.NO_MINE_BOXES = [];
-  GRID = [];
   window.LEVEL = LEVELS[level];
   window.FLAGS_COUNT = +LEVELS[level].mines;
 
