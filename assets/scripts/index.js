@@ -72,7 +72,7 @@ const renderMines = (mineCoordinates) => {
     const boxDOM = document.querySelector(`.js-box-${coordinate}`);
     boxDOM.insertAdjacentHTML(
       "beforeend",
-      `<img class="mine" src="images/mine.png" alt="mine-${coordinate}" />`
+      `<img class="mine" src="assets/images/mine.png" alt="mine-${coordinate}" />`
     );
   });
 };
@@ -192,7 +192,7 @@ const rightClick = (event, squareDOM) => {
     squareDOM.setAttribute("data-flag", "flag");
     squareDOM.insertAdjacentHTML(
       "beforeend",
-      `<img class="flag" src="./images/flag.svg" />`
+      `<img class="flag" src="assets/images/flag.svg" />`
     );
     window.FLAGS_COUNT -= 1;
   }
@@ -335,7 +335,7 @@ const addClickEvent = () => {
         handleClickOnBox(boxDOM, squareDOM, r, c)
       );
       // Using on mobile
-      boxDOM.addEventListener("long-press", (event) => {
+      boxDOM.addEventListener("touchend", (event) => {
         rightClick(event, squareDOM);
       });
     }
