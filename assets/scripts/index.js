@@ -72,7 +72,7 @@ const renderMines = (mineCoordinates) => {
     const boxDOM = document.querySelector(`.js-box-${coordinate}`);
     boxDOM.insertAdjacentHTML(
       "beforeend",
-      `<img class="mine" src="assets/images/mine.png" alt="mine-${coordinate}" />`
+      `<img class="mine" src="assets/images/bomb.svg" alt="mine-${coordinate}" />`
     );
   });
 };
@@ -334,10 +334,6 @@ const addClickEvent = () => {
       boxDOM.addEventListener("click", () =>
         handleClickOnBox(boxDOM, squareDOM, r, c)
       );
-      // Using on mobile
-      boxDOM.addEventListener("touchend", (event) => {
-        rightClick(event, squareDOM);
-      });
     }
   }
 };
